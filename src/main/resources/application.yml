@@ -1,0 +1,29 @@
+spring:
+  data:
+    rest:
+      base-path: /api
+  profiles:
+    active:
+      - dev
+      - javaconfig
+
+      
+pizzas:
+  orders:
+    pageSize: 10
+
+  discount:
+    codes:
+      summer: 10
+---
+spring:
+  profiles: prod
+  
+  datasource:
+    url: jdbc:mysql://localhost/pizzas
+    username: pizzasuser
+    password: pizzaspassword
+    
+logging:
+  level:
+    pizzas: WARN

@@ -1,0 +1,17 @@
+{"properties": [
+  {
+    "name": "pizzas.orders.page-size",
+    "type": "java.lang.String",
+    "description": "Sets the maximum number of orders to display in a list."
+  },
+  {
+    "name": "pizzas.discount.codes",
+    "type": "java.util.Map<String, Integer>",
+    "description": "A map of discount codes to a discount percentage."
+  },
+  {
+    "name": "pizzas.email",
+    "type": "java.util.Map<String, String>",
+    "description": "Configuration of the email"
+  }
+]}
