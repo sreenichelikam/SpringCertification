@@ -1,5 +1,4 @@
 package fr.otahiri.spring.divers.web.controllers;
-
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -7,6 +6,9 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import fr.otahiri.spring.divers.web.data.jpa.IngredientRepository;
+import fr.otahiri.spring.divers.web.data.jpa.PizzaRepository;
+import fr.otahiri.spring.divers.web.data.jpa.UserRepository;
 import fr.otahiri.spring.divers.web.dto.Ingredient;
 import fr.otahiri.spring.divers.web.dto.Order;
 import fr.otahiri.spring.divers.web.dto.Pizza;
@@ -21,27 +23,22 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.SessionAttributes;
 
-import fr.otahiri.spring.divers.web.dto.Ingredient.Type;
-import fr.otahiri.spring.divers.web.data.jpa.IngredientRepository;
-import fr.otahiri.spring.divers.web.data.jpa.PizzaRepository;
-import fr.otahiri.spring.divers.web.data.jpa.UserRepository;
-
 @Controller
 @RequestMapping("/design")
 @SessionAttributes("order")
 public class DesignPizzaController {
-  
+
   private final IngredientRepository ingredientRepo;
-  
+
   private PizzaRepository pizzasRepo;
 
   private UserRepository userRepo;
 
   @Autowired
   public DesignPizzaController(
-        IngredientRepository ingredientRepo, 
-        PizzaRepository pizzasRepo,
-        UserRepository userRepo) {
+          IngredientRepository ingredientRepo,
+          PizzaRepository pizzasRepo,
+          UserRepository userRepo) {
     this.ingredientRepo = ingredientRepo;
     this.pizzasRepo = pizzasRepo;
     this.userRepo = userRepo;
@@ -51,35 +48,41 @@ public class DesignPizzaController {
   public Order order() {
     return new Order();
   }
-  
+
   @ModelAttribute(name = "design")
   public Pizza design() {
     return new Pizza();
   }
-  
-  @GetMapping
-  public String showDesignForm(Model model, Principal principal) {
-    List<Ingredient> ingredients = new ArrayList<>();
-    ingredientRepo.findAll().forEach(i -> ingredients.add(i));
-    
-    Type[] types = Ingredient.Type.values();
-    for (Type type : types) {
-      model.addAttribute(type.toString().toLowerCase(), 
-          filterByType(ingredients, type));      
-    }
-    
+
+  @ModelAttribute
+  public void init(Model model, Principal principal) {
     String username = principal.getName();
     User user = userRepo.findByUsername(username);
     model.addAttribute("user", user);
 
+    List<Ingredient> ingredients = new ArrayList<>();
+    for (Ingredient i : ingredientRepo.findAll()) {
+      ingredients.add(i);
+    }
+
+    Ingredient.Type[] types = Ingredient.Type.values();
+    for (Ingredient.Type type : types) {
+      model.addAttribute(type.toString().toLowerCase(),
+              filterByType(ingredients, type));
+    }
+
+  }
+
+  @GetMapping
+  public String showDesignForm(Model model) {
     return "design";
   }
 
   @PostMapping
   public String processDesign(
-      @Valid Pizza pizza, Errors errors, 
-      @ModelAttribute Order order) {
-    
+          @Valid Pizza pizza, Errors errors,
+          @ModelAttribute Order order) {
+
     if (errors.hasErrors()) {
       return "design";
     }
@@ -91,11 +94,11 @@ public class DesignPizzaController {
   }
 
   private List<Ingredient> filterByType(
-      List<Ingredient> ingredients, Type type) {
+          List<Ingredient> ingredients, Ingredient.Type type) {
     return ingredients
-              .stream()
-              .filter(x -> x.getType().equals(type))
-              .collect(Collectors.toList());
+            .stream()
+            .filter(x -> x.getType().equals(type))
+            .collect(Collectors.toList());
   }
-  
+
 }
