@@ -65,12 +65,6 @@ public class DesignPizzaController {
       ingredients.add(i);
     }
 
-    Ingredient.Type[] types = Ingredient.Type.values();
-    for (Ingredient.Type type : types) {
-      model.addAttribute(type.toString().toLowerCase(),
-              filterByType(ingredients, type));
-    }
-
   }
 
   @GetMapping
@@ -94,7 +88,7 @@ public class DesignPizzaController {
   }
 
   private List<Ingredient> filterByType(
-          List<Ingredient> ingredients, Ingredient.Type type) {
+          List<Ingredient> ingredients, String type) {
     return ingredients
             .stream()
             .filter(x -> x.getType().equals(type))
